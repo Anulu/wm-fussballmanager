@@ -211,7 +211,9 @@ const TEAMS = [
   "Schweden","Österreich","Türkei","Nigeria","Wales","Schottland","Irland","Norwegen","Tschechien","Ungarn",
   "Griechenland","Rumänien","Ukraine","Peru","Chile","Paraguay","Venezuela","Costa Rica","Panama","Tunesien",
   "Algerien","Ägypten","Elfenbeinküste","Mali","Saudi-Arabien","Iran","Irak","Katar","China","Indien",
-  "Thailand","Neuseeland","Bolivien","Honduras","Slowakei","Slowenien"
+  "Thailand","Neuseeland","Bolivien","Honduras","Slowakei","Slowenien",
+  // WM-2026-Teilnehmer
+  "Curaçao","Haiti","Bosnien","Kap Verde","Usbekistan","DR Kongo","Jordanien","Südafrika"
 ];
 const FLAGGEN = {
   "Deutschland":"🇩🇪","Brasilien":"🇧🇷","Argentinien":"🇦🇷","Frankreich":"🇫🇷","Spanien":"🇪🇸","England":"🏴󠁧󠁢󠁥󠁮󠁧󠁿",
@@ -223,7 +225,8 @@ const FLAGGEN = {
   "Griechenland":"🇬🇷","Rumänien":"🇷🇴","Ukraine":"🇺🇦","Peru":"🇵🇪","Chile":"🇨🇱","Paraguay":"🇵🇾","Venezuela":"🇻🇪",
   "Costa Rica":"🇨🇷","Panama":"🇵🇦","Tunesien":"🇹🇳","Algerien":"🇩🇿","Ägypten":"🇪🇬","Elfenbeinküste":"🇨🇮","Mali":"🇲🇱",
   "Saudi-Arabien":"🇸🇦","Iran":"🇮🇷","Irak":"🇮🇶","Katar":"🇶🇦","China":"🇨🇳","Indien":"🇮🇳","Thailand":"🇹🇭",
-  "Neuseeland":"🇳🇿","Bolivien":"🇧🇴","Honduras":"🇭🇳","Slowakei":"🇸🇰","Slowenien":"🇸🇮"
+  "Neuseeland":"🇳🇿","Bolivien":"🇧🇴","Honduras":"🇭🇳","Slowakei":"🇸🇰","Slowenien":"🇸🇮",
+  "Curaçao":"🇨🇼","Haiti":"🇭🇹","Bosnien":"🇧🇦","Kap Verde":"🇨🇻","Usbekistan":"🇺🇿","DR Kongo":"🇨🇩","Jordanien":"🇯🇴","Südafrika":"🇿🇦"
 };
 const flagge = (t) => FLAGGEN[t] || "🏳️";
 
@@ -243,7 +246,7 @@ const DEUTSCHLAND_KADER = [
   {name:"Antonio Rüdiger",position:"ABW"},{name:"Jonathan Tah",position:"ABW"},{name:"Nico Schlotterbeck",position:"ABW"},
   {name:"Waldemar Anton",position:"ABW"},{name:"Malick Thiaw",position:"ABW"},{name:"David Raum",position:"ABW"},
   {name:"Nathaniel Brown",position:"ABW"},{name:"Joshua Kimmich",position:"ABW"},
-  {name:"Aleksandar Pavlović",position:"MF"},{name:"Angelo Stiller",position:"MF"},{name:"Pascal Groß",position:"MF"},
+  {name:"Aleksandar Pavlović",position:"MF"},{name:"Knodelino",position:"MF"},{name:"Pascal Groß",position:"MF"},
   {name:"Leon Goretzka",position:"MF"},{name:"Felix Nmecha",position:"MF"},{name:"Florian Wirtz",position:"MF"},
   {name:"Jamal Musiala",position:"MF"},{name:"Nadiem Amiri",position:"MF"},
   {name:"Kai Havertz",position:"ANG"},{name:"Nick Woltemade",position:"ANG"},{name:"Deniz Undav",position:"ANG"},
@@ -265,6 +268,16 @@ function spielerRating(sp){
   const g=POS_GEWICHT[sp.position]; const s=g.schnelligkeit+g.technik+g.kondition;
   return Math.round((sp.schnelligkeit*g.schnelligkeit+sp.technik*g.technik+sp.kondition*g.kondition)/s);
 }
+// Feste Rückennummern für den deutschen Kader (Knodelino = 10)
+const DE_NUMMERN = {
+  "Manuel Neuer":1,"Oliver Baumann":12,"Alexander Nübel":22,
+  "Antonio Rüdiger":2,"Jonathan Tah":4,"Nico Schlotterbeck":15,"Waldemar Anton":5,
+  "Malick Thiaw":16,"David Raum":3,"Nathaniel Brown":18,"Joshua Kimmich":6,
+  "Aleksandar Pavlović":8,"Knodelino":10,"Pascal Groß":13,"Leon Goretzka":11,
+  "Felix Nmecha":14,"Florian Wirtz":17,"Jamal Musiala":7,"Nadiem Amiri":20,
+  "Kai Havertz":9,"Nick Woltemade":19,"Deniz Undav":21,"Leroy Sané":23,"Maximilian Beier":24,
+};
+
 function generiereKader(stärke, team){
   const positionen=[...Array(3).fill("TW"),...Array(8).fill("ABW"),...Array(8).fill("MF"),...Array(5).fill("ANG")];
   let echteNamen=null;
@@ -273,13 +286,18 @@ function generiereKader(stärke, team){
     DEUTSCHLAND_KADER.forEach(p=>echteNamen[p.position].push(p.name));
   }
   const spieler=[]; const zähler={TW:0,ABW:0,MF:0,ANG:0};
+  const vergebeneNr=new Set();
   for(let i=0;i<24;i++){
     const pos=positionen[i]; const basis=stärke+rnd(-12,12);
     let name;
     if(echteNamen && echteNamen[pos][zähler[pos]]){ name=echteNamen[pos][zähler[pos]]; }
     else { name=`${pick(VORNAMEN)} ${pick(NACHNAMEN)}`; }
     zähler[pos]++;
-    const sp={ id:i, name, position:pos,
+    // Rückennummer
+    let nummer = (team==="Deutschland" && DE_NUMMERN[name]) ? DE_NUMMERN[name] : null;
+    if(nummer==null){ let n=1; while(vergebeneNr.has(n)) n++; nummer=n; }
+    vergebeneNr.add(nummer);
+    const sp={ id:i, name, position:pos, nummer,
       schnelligkeit:Math.max(40,Math.min(99,basis+rnd(-10,10))),
       technik:Math.max(40,Math.min(99,basis+rnd(-10,10))),
       kondition:Math.max(40,Math.min(99,basis+rnd(-10,10))) };
@@ -289,6 +307,22 @@ function generiereKader(stärke, team){
 }
 const FORMATION = { TW:1, ABW:4, MF:4, ANG:2 };
 const RUNDEN = ["Sechzehntelfinale","Achtelfinale","Viertelfinale","Halbfinale","Finale"];
+
+// Echte WM-2026-Gruppen (A–L). Teams, die nicht im Kader sind, sind ergänzt.
+const WM_GRUPPEN = [
+  ["Mexiko","Südafrika","Südkorea","Tschechien"],
+  ["Kanada","Katar","Schweiz","Bosnien"],
+  ["Brasilien","Marokko","Schottland","Haiti"],
+  ["USA","Paraguay","Australien","Türkei"],
+  ["Deutschland","Curaçao","Elfenbeinküste","Ecuador"],
+  ["Niederlande","Japan","Tunesien","Schweden"],
+  ["Belgien","Ägypten","Iran","Neuseeland"],
+  ["Spanien","Uruguay","Kap Verde","Saudi-Arabien"],
+  ["Frankreich","Senegal","Norwegen","Panama"],
+  ["Argentinien","Österreich","Algerien","Jordanien"],
+  ["Portugal","Kolumbien","Usbekistan","DR Kongo"],
+  ["England","Kroatien","Ghana","Irland"],
+];
 
 function simuliereGruppe(teams, stärken, eigeneErgebnisse, nurReale=false){
   const tab={}; teams.forEach(t=>{tab[t]={team:t,pkt:0,tore:0,gegentore:0,sp:0};});
@@ -437,10 +471,40 @@ function App(){
     return { runde,gegnerName,meineTore,gegnerTore, torEvents, vorfälle, meineSkills:teamStärke, gSkills };
   }
   function baueGruppen(){
-    const alle=[...TEAMS].sort(()=>Math.random()-0.5); const ohneMich=alle.filter(t=>t!==meinTeam);
-    const gruppen=[[meinTeam,...ohneMich.slice(0,3)]]; let idx=3;
-    for(let g=1;g<16;g++){ gruppen.push(ohneMich.slice(idx,idx+4)); idx+=4; }
-    return gruppen;
+    // Echte WM-Gruppen kopieren
+    const echte = WM_GRUPPEN.map(g=>[...g]);
+    // Welche Teams sind bereits in einer echten Gruppe?
+    const inGruppe = new Set(echte.flat());
+
+    // Gruppe meines Teams finden; sonst neue Zusatzgruppe für mich vorbereiten
+    let meineEchteGruppe = echte.find(g=>g.includes(meinTeam));
+
+    // Restliche Teams (nicht in echten Gruppen) für Auffüll-Gruppen
+    let rest = TEAMS.filter(t=>!inGruppe.has(t)).sort(()=>Math.random()-0.5);
+
+    // Falls mein Team nicht in einer echten WM-Gruppe ist: eigene Gruppe bauen
+    if(!meineEchteGruppe){
+      const partner = rest.filter(t=>t!==meinTeam).slice(0,3);
+      meineEchteGruppe = [meinTeam,...partner];
+      rest = rest.filter(t=>t!==meinTeam && !partner.includes(t));
+    }
+
+    // 16 Gruppen zusammenstellen: meine Gruppe zuerst, dann die anderen echten, dann Auffüllung
+    // Eigenes Team in der eigenen Gruppe nach vorne
+    meineEchteGruppe = [meinTeam, ...meineEchteGruppe.filter(t=>t!==meinTeam)];
+    const gruppen = [meineEchteGruppe];
+    echte.forEach(g=>{ if(g!==meineEchteGruppe) gruppen.push(g); });
+    // Mit Rest auf 16 Gruppen auffüllen
+    let idx=0;
+    while(gruppen.length<16 && idx+4<=rest.length){
+      gruppen.push(rest.slice(idx,idx+4)); idx+=4;
+    }
+    // Falls noch Plätze fehlen (zu wenige Rest-Teams), mit verbleibenden auffüllen
+    const verbleibend = rest.slice(idx);
+    while(gruppen.length<16 && verbleibend.length>=4){
+      gruppen.push(verbleibend.splice(0,4));
+    }
+    return gruppen.slice(0,16);
   }
   function spieleTurnier(){
     const elf=aufstellung.map(id=>kader.find(s=>s.id===id)); const ms=teamStärke.gesamt+rnd(-3,3);
@@ -606,50 +670,64 @@ function App(){
   }
 
   return (
-    <div className="wrap">
-      <div className="row between headbar mb4">
-        <div>
-          <div className="eyebrow">Small Knuddel presents</div>
-          <h1>WM Fußballmanager</h1>
+    <div>
+      {/* Dunkle Topbar im TenderCluster-Stil */}
+      <div className="topbar">
+        <div className="logo">
+          <span className="dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          Young Knuddel<span className="accent"> presents</span>
         </div>
-        <div className="brand"><Trophy size={22} color="var(--green-dark)"/></div>
+        <span className="tagline">Young Knuddel presents</span>
+        <div className="nav">
+          <button className="tab active"><Trophy size={15}/><span>Turnier</span></button>
+          <span className="reply"><Trophy size={18} color="var(--green)"/> WM '26</span>
+        </div>
       </div>
 
-      {phase==="auswahl" && (
-        <div>
-          <p className="grey mb4">WM in Deutschland 🇩🇪 · 64 Teams, Gruppenphase und K.o.-Runde in 11 Stadien. Mit echtem DFB-Kader 2026. Wähle dein Team und führe es zum Titel!</p>
-          <div className="grid g4">
-            {TEAMS.map(t=>(
-              <button key={t} className="teamsel" onClick={()=>wähleTeam(t)}>
-                <span style={{fontSize:"16px"}}>{flagge(t)}</span> {t}
-              </button>
-            ))}
+      <div className="wrap">
+        <h1>Deine WM. <span className="hl">Dein Titel.</span></h1>
+        <p className="subline">64 Teams, Gruppenphase und K.o.-Runde in 11 Stadien — mit echtem DFB-Kader 2026. Stelle deine Elf auf und führe sie zum Weltmeistertitel.</p>
+
+        {phase==="auswahl" && (
+          <div className="container">
+            <h2 className="mb3">Wähle dein Team</h2>
+            <div className="grid g4">
+              {TEAMS.map(t=>(
+                <button key={t} className="teamsel" onClick={()=>wähleTeam(t)}>
+                  <span style={{fontSize:"16px"}}>{flagge(t)}</span> {t}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {phase==="aufstellung" && (
-        <Aufstellung {...{meinTeam,kader,aufstellung,empfehlung,gesperrteIds,gesperrteListe,posZähler,
-          teamStärke,aufstellungKomplett,pausiert,toggleSpieler,übernehmeEmpfehlung,neustart,
-          start:pausiert?setzeFort:spieleTurnier}} />
-      )}
+        {phase==="aufstellung" && (
+          <div className="container">
+            <Aufstellung {...{meinTeam,kader,aufstellung,empfehlung,gesperrteIds,gesperrteListe,posZähler,
+              teamStärke,aufstellungKomplett,pausiert,toggleSpieler,übernehmeEmpfehlung,neustart,
+              start:pausiert?setzeFort:spieleTurnier}} />
+          </div>
+        )}
 
-      {phase==="turnier" && (
-        <div>
-          {wechsel ? <WechselView wechsel={wechsel} kader={kader} aufstellung={aufstellung} gesperrteIds={gesperrteIds} onWähle={wähleErsatz} />
-          : liveSpiel ? <LiveSpiel key={liveSpiel.res.runde+liveSpiel.res.gegnerName} ls={liveSpiel} meinTeam={meinTeam} onFertig={spielFertig} />
-          : elfmeter ? <ElfmeterView em={elfmeter} meinTeam={meinTeam} onAktion={elfmeterAktion} />
-          : turnierState ? (
-            <Zwischen {...{turnierState,meinTeam,turnierLog,nächstesSpiel,
-              aufstellungAendern:()=>{setPausiert(turnierState);setTurnierState(null);setPhase("aufstellung");}}} />
-          ) : null}
-        </div>
-      )}
+        {phase==="turnier" && (
+          <div className="container">
+            {wechsel ? <WechselView wechsel={wechsel} kader={kader} aufstellung={aufstellung} gesperrteIds={gesperrteIds} onWähle={wähleErsatz} />
+            : liveSpiel ? <LiveSpiel key={liveSpiel.res.runde+liveSpiel.res.gegnerName} ls={liveSpiel} meinTeam={meinTeam} onFertig={spielFertig} />
+            : elfmeter ? <ElfmeterView em={elfmeter} meinTeam={meinTeam} onAktion={elfmeterAktion} />
+            : turnierState ? (
+              <Zwischen {...{turnierState,meinTeam,turnierLog,nächstesSpiel,
+                aufstellungAendern:()=>{setPausiert(turnierState);setTurnierState(null);setPhase("aufstellung");}}} />
+            ) : null}
+          </div>
+        )}
 
-      {phase==="ergebnis" && (
-        <Ergebnis {...{endergebnis,meinTeam,turnierState,turnierLog,
-          neueAufstellung:()=>{setTurnierState(null);setPausiert(null);setPhase("aufstellung");}, neustart}} />
-      )}
+        {phase==="ergebnis" && (
+          <div className="container">
+            <Ergebnis {...{endergebnis,meinTeam,turnierState,turnierLog,
+              neueAufstellung:()=>{setTurnierState(null);setPausiert(null);setPhase("aufstellung");}, neustart}} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -679,7 +757,7 @@ function WechselView({wechsel,kader,aufstellung,gesperrteIds,onWähle}){
             <button key={sp.id} onClick={()=>onWähle(sp.id)} className="plr">
               <span className={`posbadge pos-${sp.position}`}>{sp.position}</span>
               <div className="flex1">
-                <div className="semi small truncate">{sp.name}</div>
+                <div className="semi small truncate row gap1"><span className="mono" style={{color:"var(--muted)",minWidth:"20px"}}>{sp.nummer}</span>{sp.name}</div>
                 <div className="row gap2 small grey">
                   <span>SCH {sp.schnelligkeit}</span><span>TEC {sp.technik}</span><span>KON {sp.kondition}</span>
                   <span style={{fontWeight:700,color:"#374151"}}>★{sp.rating}</span>
@@ -735,7 +813,7 @@ function Aufstellung({meinTeam,kader,aufstellung,empfehlung,gesperrteIds,gesperr
               <span className={`posbadge pos-${sp.position}`}>{sp.position}</span>
               <div className="flex1">
                 <div className="semi small truncate row gap1">
-                  {sp.name}
+                  <span className="mono" style={{color:"var(--muted)",minWidth:"20px"}}>{sp.nummer}</span>{sp.name}
                   {empfohlen&&!gesperrt && <Star size={12} className="star" fill="#fbbf24"/>}
                   {gesperrt && <span className="shrink0">{sperrInfo?.typ==="rot"?"🟥":sperrInfo?.typ==="gelb-rot"||sperrInfo?.typ==="gelb-sperre"?"🟨":"🩹"}</span>}
                 </div>
