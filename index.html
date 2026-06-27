@@ -18,23 +18,37 @@
 <style>
   * { box-sizing: border-box; }
   html, body { height: 100%; }
+  :root{
+    --green:#3ddc84;        /* Reply-Cluster Grün */
+    --green-dark:#1faf63;
+    --green-deep:#0f7a44;
+    --ink:#1a2b3a;          /* dunkles Blau-Grau (Headlines) */
+    --slate:#2b3a4a;        /* Seitenbalken */
+    --bg:#f4f7f9;
+    --line:#e3eaef;
+    --muted:#7a8a99;
+  }
   body {
     margin: 0;
-    background: #f1f5f9;
+    background: var(--bg);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: #1f2937;
+    color: var(--ink);
     -webkit-text-size-adjust: 100%;
   }
+  /* Dunkler Seitenbalken links wie auf der Folie */
+  body::before{
+    content:""; position:fixed; left:0; top:0; bottom:0; width:10px;
+    background:var(--slate); z-index:5;
+  }
   #root { min-height: 100vh; }
-  /* Ladeanzeige, solange Babel kompiliert */
   #boot { display:flex; flex-direction:column; align-items:center; justify-content:center;
-          min-height:100vh; gap:14px; color:#64748b; }
+          min-height:100vh; gap:14px; color:var(--muted); }
   #boot .ball { font-size:48px; animation: spin 1.2s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   #boot.err { color:#b91c1c; padding:24px; text-align:center; }
-  .wrap { max-width: 760px; margin: 0 auto; padding: 16px; }
-  h1 { font-size: 24px; margin: 0; }
-  h2 { font-size: 18px; margin: 0 0 8px; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 20px 20px 20px 28px; }
+  h1 { font-size: 30px; margin: 0; font-weight: 800; letter-spacing:-.5px; color:var(--ink); }
+  h2 { font-size: 18px; margin: 0 0 8px; font-weight:800; color:var(--ink); }
   button { font-family: inherit; cursor: pointer; }
   button:disabled { cursor: not-allowed; }
   .row { display: flex; align-items: center; }
@@ -52,55 +66,93 @@
   .g4 { grid-template-columns: repeat(4,1fr); }
   @media (max-width:560px){ .g4{grid-template-columns:repeat(2,1fr);} .gsm2{grid-template-columns:1fr;} }
   @media (min-width:561px){ .gsm2{grid-template-columns:repeat(2,1fr);} }
-  .card { background:#fff; border:2px solid #e5e7eb; border-radius:12px; padding:8px; box-shadow:0 1px 2px rgba(0,0,0,.04); }
-  .panel { border:1px solid; border-radius:12px; padding:12px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:10px;
+          box-shadow:0 2px 10px rgba(26,43,58,.05); }
+  .panel { border:1px solid var(--line); border-radius:16px; padding:14px; background:#fff;
+           box-shadow:0 2px 10px rgba(26,43,58,.05); }
+  /* Label-Badge im Stil der Folie (Define/Measure/Analyze/Improve) */
+  .badge{ background:var(--green); color:#063a22; font-weight:800; font-size:11px;
+          padding:3px 10px; border-radius:6px; letter-spacing:.3px; }
+  .badge.dark{ background:var(--slate); color:#fff; }
   .truncate{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .small{ font-size:12px; } .xs{ font-size:11px; } .tiny{ font-size:10px; }
   .bold{ font-weight:700; } .semi{ font-weight:600; }
   .tc{ text-align:center; } .tr{ text-align:right; } .tl{ text-align:left; }
-  .grey{ color:#6b7280; } .grey2{ color:#9ca3af; }
+  .grey{ color:var(--muted); } .grey2{ color:#9fb0bd; }
   .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .btn { width:100%; padding:12px; border:none; border-radius:12px; font-weight:700; color:#fff;
-         display:flex; align-items:center; justify-content:center; gap:8px; transition:background .15s; }
-  .btn-green{ background:#16a34a; } .btn-green:hover:not(:disabled){ background:#15803d; }
-  .btn-blue{ background:#2563eb; } .btn-blue:hover:not(:disabled){ background:#1d4ed8; }
-  .btn-grey{ background:#e5e7eb; color:#1f2937; } .btn-grey:hover{ background:#d1d5db; }
-  .btn-amber{ background:#f59e0b; padding:6px 12px; border-radius:8px; font-size:12px; width:auto; }
-  .btn-amber:hover{ background:#d97706; }
-  .btn:disabled{ background:#d1d5db; }
-  .pill { padding:4px 8px; border-radius:6px; border:1px solid; font-size:12px; }
-  .teamsel { padding:8px; background:#fff; border:2px solid #e5e7eb; border-radius:12px; font-weight:600;
-             font-size:12px; display:flex; align-items:center; gap:6px; justify-content:center; transition:.15s; }
-  .teamsel:hover{ border-color:#16a34a; background:#f0fdf4; }
-  .plr { display:flex; align-items:center; gap:12px; padding:8px; border:2px solid #e5e7eb; border-radius:12px;
+  .btn { width:100%; padding:13px; border:none; border-radius:12px; font-weight:800; color:#063a22;
+         display:flex; align-items:center; justify-content:center; gap:8px; transition:.15s; letter-spacing:.2px; }
+  .btn-green{ background:var(--green); } .btn-green:hover:not(:disabled){ background:var(--green-dark); color:#fff; }
+  .btn-blue{ background:var(--slate); color:#fff; } .btn-blue:hover:not(:disabled){ background:#1d2a36; }
+  .btn-grey{ background:#eaf0f3; color:var(--ink); } .btn-grey:hover{ background:#dde7ec; }
+  .btn-amber{ background:var(--green); color:#063a22; padding:7px 12px; border-radius:8px; font-size:12px; width:auto; }
+  .btn-amber:hover{ background:var(--green-dark); color:#fff; }
+  .btn:disabled{ background:#d7e0e6; color:#9fb0bd; }
+  .pill { padding:4px 9px; border-radius:6px; border:1px solid; font-size:12px; font-weight:700; }
+  .teamsel { padding:9px; background:#fff; border:1px solid var(--line); border-radius:12px; font-weight:700;
+             font-size:12px; display:flex; align-items:center; gap:6px; justify-content:center; transition:.15s;
+             box-shadow:0 1px 4px rgba(26,43,58,.04); }
+  .teamsel:hover{ border-color:var(--green); background:#effaf3; transform:translateY(-1px); }
+  .plr { display:flex; align-items:center; gap:12px; padding:9px; border:1px solid var(--line); border-radius:12px;
          text-align:left; background:#fff; width:100%; transition:.15s; }
-  .plr:hover:not(:disabled){ border-color:#d1d5db; }
-  .plr.sel{ border-color:#16a34a; background:#f0fdf4; }
-  .plr.lock{ background:#f3f4f6; opacity:.6; }
-  .posbadge{ font-size:11px; font-weight:700; padding:4px 8px; border-radius:6px; border:1px solid; width:48px; text-align:center; flex-shrink:0; }
+  .plr:hover:not(:disabled){ border-color:#cdd9e0; }
+  .plr.sel{ border-color:var(--green); background:#effaf3; box-shadow:0 0 0 1px var(--green) inset; }
+  .plr.lock{ background:#f3f6f8; opacity:.6; }
+  .posbadge{ font-size:11px; font-weight:800; padding:4px 8px; border-radius:6px; border:1px solid; width:48px; text-align:center; flex-shrink:0; }
   .pos-TW{ background:#fef3c7; color:#92400e; border-color:#fcd34d; }
   .pos-ABW{ background:#dbeafe; color:#1e40af; border-color:#93c5fd; }
   .pos-MF{ background:#dcfce7; color:#166534; border-color:#86efac; }
   .pos-ANG{ background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
-  .scoreboard{ background:#16a34a; border-radius:12px; padding:20px; color:#fff; text-align:center; }
-  .bar{ height:8px; background:rgba(255,255,255,.2); border-radius:99px; overflow:hidden; margin-top:12px; }
-  .bar > div{ height:100%; background:#fff; transition:width .1s linear; }
-  .goal{ background:rgba(255,255,255,.9); border:4px solid #fff; border-radius:8px; display:grid;
-         grid-template-columns:repeat(3,1fr); height:112px; overflow:hidden; }
-  .goal > div{ display:flex; align-items:center; justify-content:center; border-left:1px solid #bbf7d0; border-right:1px solid #bbf7d0; }
-  .ecke{ padding:16px; border:2px solid #e5e7eb; border-radius:12px; background:#fff; font-weight:600;
+  /* Anzeigetafel im dunklen Folien-Ton mit grünem Akzent */
+  .scoreboard{ background:var(--ink); border-radius:16px; padding:20px; color:#fff; text-align:center;
+               box-shadow:0 6px 20px rgba(26,43,58,.18); }
+  .bar{ height:10px; background:rgba(255,255,255,.15); border-radius:99px; overflow:hidden; margin-top:12px; }
+  .bar > div{ height:100%; background:var(--green); transition:width .1s linear; }
+  .goal{ background:#eef4f7; border:4px solid #fff; border-radius:10px; display:grid;
+         grid-template-columns:repeat(3,1fr); height:112px; overflow:hidden; position:relative; }
+  .goal > div{ display:flex; align-items:center; justify-content:center; border-left:1px solid #d7e3ea; border-right:1px solid #d7e3ea; }
+  /* Elfmeter-Animation: Ball & Torwart */
+  .pk-stage{ position:relative; height:150px; background:linear-gradient(#dff3e6,#dff3e6 60%,#bfe3c8);
+             border-radius:12px; overflow:hidden; border:3px solid #fff; }
+  .pk-net{ position:absolute; top:10px; left:8%; right:8%; height:74px; border:3px solid #fff;
+           border-radius:6px 6px 0 0; background:
+           repeating-linear-gradient(90deg, rgba(255,255,255,.5) 0 1px, transparent 1px 11px),
+           repeating-linear-gradient(0deg, rgba(255,255,255,.5) 0 1px, transparent 1px 11px),
+           rgba(255,255,255,.12); }
+  .pk-ball{ position:absolute; bottom:8px; left:calc(50% - 13px); width:26px; height:26px; font-size:22px;
+            line-height:26px; text-align:center; transition: transform .55s cubic-bezier(.4,.05,.25,1); z-index:3; }
+  .pk-keeper{ position:absolute; top:30px; font-size:30px; transition: all .45s cubic-bezier(.3,.6,.4,1);
+              z-index:2; }
+  .pk-flash{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+             font-size:30px; font-weight:800; z-index:4; pointer-events:none; }
+  @keyframes pkShake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+  .pk-shake{ animation:pkShake .25s ease 2; }
+  @keyframes pkPop{ 0%{transform:scale(.4);opacity:0} 60%{transform:scale(1.25)} 100%{transform:scale(1);opacity:1} }
+  .pk-pop{ animation:pkPop .4s ease both; }
+  .pk-score{ font-variant-numeric:tabular-nums; }
+  .pk-step{ display:flex; gap:6px; justify-content:center; margin-top:8px; }
+  .pk-dot{ width:14px; height:14px; border-radius:50%; border:2px solid #cdd9e0; }
+  .pk-dot.goal{ background:var(--green); border-color:var(--green-dark); }
+  .pk-dot.miss{ background:#e98b96; border-color:#d9485a; }
+  .ecke{ padding:16px; border:1px solid var(--line); border-radius:12px; background:#fff; font-weight:700;
          display:flex; flex-direction:column; align-items:center; gap:4px; transition:.15s; width:100%; }
-  .ecke:hover{ border-color:#16a34a; background:#f0fdf4; }
-  details summary{ cursor:pointer; font-weight:600; font-size:13px; }
+  .ecke:hover:not(:disabled){ border-color:var(--green); background:#effaf3; }
+  .ecke:disabled{ opacity:.5; }
+  details summary{ cursor:pointer; font-weight:700; font-size:13px; }
   .lt{ text-decoration:line-through; }
-  .tbl{ background:#fff; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; font-size:13px; }
-  .tbl .hd{ background:#f9fafb; padding:6px 12px; font-size:11px; font-weight:600; color:#6b7280; display:flex; }
-  .tbl .tr2{ padding:6px 12px; display:flex; align-items:center; }
-  .tbl .me{ background:#f0fdf4; font-weight:700; }
+  .tbl{ background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden; font-size:13px;
+        box-shadow:0 2px 10px rgba(26,43,58,.05); }
+  .tbl .hd{ background:#f0f5f8; padding:7px 12px; font-size:11px; font-weight:800; color:var(--muted); display:flex; }
+  .tbl .tr2{ padding:7px 12px; display:flex; align-items:center; border-top:1px solid #f0f5f8; }
+  .tbl .me{ background:#effaf3; font-weight:800; }
   .w8{ width:34px; text-align:center; } .w10{ width:42px; text-align:center; }
-  .star{ color:#f59e0b; }
+  .star{ color:var(--green-dark); }
   svg.ic{ width:1em; height:1em; vertical-align:-0.125em; }
-  footer{ text-align:center; color:#9ca3af; font-size:11px; padding:24px 0 8px; }
+  /* Kopfzeile im Folien-Stil: kleines grünes Label über großer Headline */
+  .eyebrow{ color:var(--green-dark); font-weight:800; font-size:12px; letter-spacing:2px; text-transform:uppercase; }
+  .brand{ color:var(--ink); font-weight:800; font-size:13px; display:flex; align-items:center; gap:6px; }
+  .headbar{ border-bottom:3px solid var(--green); padding-bottom:14px; }
+  footer{ text-align:center; color:#9fb0bd; font-size:11px; padding:24px 0 8px; }
 </style>
 </head>
 <body>
@@ -261,6 +313,10 @@ function App(){
   const [turnierState,setTurnierState]=useState(null);
   const [liveSpiel,setLiveSpiel]=useState(null);
   const [pausiert,setPausiert]=useState(null);
+  const [wechsel,setWechsel]=useState(null); // anstehende Einwechslung nach Verletzung
+
+  // Bei jedem Ansichtswechsel automatisch nach oben scrollen
+  useEffect(()=>{ window.scrollTo(0,0); }, [phase, liveSpiel, elfmeter, turnierState, wechsel]);
 
   function wähleTeam(team){
     const stärke = team==="Deutschland" ? rnd(78,86) : rnd(68,82);
@@ -387,10 +443,13 @@ function App(){
     let runde,gegner,gegnerStärke;
     if(state.phase==="gruppe"){ runde=`Gruppenphase · Spieltag ${state.gruppenSpielIdx+1}`; gegner=state.meineGegner[state.gruppenSpielIdx]; gegnerStärke=state.stärken[gegner]??70; }
     else { runde=RUNDEN[state.rundeIdx]; gegner=state.feld[1]; gegnerStärke=(state.stärken[gegner]??70)+state.rundeIdx*1.5; }
-    const res=simuliereSpiel(state.ms,gegnerStärke,gegner,state.elf,runde);
+    // Aktuelle Aufstellung verwenden (berücksichtigt Einwechslungen nach Verletzung)
+    const aktElf = aufstellung.length===11 ? aufstellung.map(id=>kader.find(s=>s.id===id)).filter(Boolean) : state.elf;
+    const elf = aktElf.length===11 ? aktElf : state.elf;
+    const res=simuliereSpiel(state.ms,gegnerStärke,gegner,elf,runde);
     res.stadion = runde==="Finale" ? STADIEN[0] : zufallsStadion();
     const diff=state.ms-gegnerStärke; res.siegchance=Math.round(Math.max(8,Math.min(92,50+diff*2.2)));
-    setLiveSpiel({res,state});
+    setLiveSpiel({res:{...res},state:{...state,elf}});
   }
   function spielFertig(res,state){
     setLiveSpiel(null);
@@ -433,25 +492,64 @@ function App(){
     const neueSperren=aktuelleSperren; const gset=new Set(neueSperren.map(s=>s.spielerId));
     if(gset.size>0) setAufstellung(prev=>prev.filter(id=>!gset.has(id)));
 
+    // Berechneten Folgezustand zusammenstellen (wird ggf. erst nach Einwechslung gesetzt)
+    let folge;
     if(state.phase==="gruppe"){
       const gegner=state.meineGegner[state.gruppenSpielIdx];
       const eigeneErgebnisse=[...state.eigeneErgebnisse,{a:meinTeam,b:gegner,toreA:res.meineTore,toreB:res.gegnerTore}];
       if(state.gruppenSpielIdx<2){
-        setTurnierState({...state,gruppenSpielIdx:state.gruppenSpielIdx+1,eigeneErgebnisse,log:neuLog,entwicklung,gesperrt:neueSperren,gelbKonto,sperrKonto}); return;
+        folge={typ:"state",wert:{...state,gruppenSpielIdx:state.gruppenSpielIdx+1,eigeneErgebnisse,log:neuLog,entwicklung,gesperrt:neueSperren,gelbKonto,sperrKonto}};
+      } else {
+        const tabelleMeine=simuliereGruppe(state.meineGruppe,state.stärken,eigeneErgebnisse);
+        const meinPlatz=tabelleMeine.findIndex(r=>r.team===meinTeam)+1;
+        if(meinPlatz>2){ folge={typ:"ende",end:"gruppe-aus",wert:{...state,eigeneErgebnisse,log:neuLog,tabelleMeine,meinPlatz}}; }
+        else {
+          const quali=[]; state.gruppen.forEach((grp,gi)=>{ const tab=gi===0?tabelleMeine:simuliereGruppe(grp,state.stärken,null); quali.push(tab[0].team,tab[1].team); });
+          const ohneMich=quali.filter(t=>t!==meinTeam).sort(()=>Math.random()-0.5); const feld=[meinTeam,...ohneMich];
+          folge={typ:"state",wert:{...state,phase:"ko",feld,rundeIdx:0,eigeneErgebnisse,log:neuLog,entwicklung,gesperrt:neueSperren,tabelleMeine,meinPlatz,gruppeFertig:true,gelbKonto,sperrKonto}};
+        }
       }
-      const tabelleMeine=simuliereGruppe(state.meineGruppe,state.stärken,eigeneErgebnisse);
-      const meinPlatz=tabelleMeine.findIndex(r=>r.team===meinTeam)+1;
-      if(meinPlatz>2){ setEndergebnis("gruppe-aus"); setTurnierState({...state,eigeneErgebnisse,log:neuLog,tabelleMeine,meinPlatz}); setPhase("ergebnis"); return; }
-      const quali=[]; state.gruppen.forEach((grp,gi)=>{ const tab=gi===0?tabelleMeine:simuliereGruppe(grp,state.stärken,null); quali.push(tab[0].team,tab[1].team); });
-      const ohneMich=quali.filter(t=>t!==meinTeam).sort(()=>Math.random()-0.5); const feld=[meinTeam,...ohneMich];
-      setTurnierState({...state,phase:"ko",feld,rundeIdx:0,eigeneErgebnisse,log:neuLog,entwicklung,gesperrt:neueSperren,tabelleMeine,meinPlatz,gruppeFertig:true,gelbKonto,sperrKonto}); return;
+    } else {
+      if(!gewonnen){ folge={typ:"ende",end:res.runde,wert:null}; }
+      else if(state.rundeIdx===RUNDEN.length-1){ folge={typ:"ende",end:"weltmeister",wert:null}; }
+      else {
+        const feld=state.feld; const sieger=[meinTeam]; const andereErgebnisse=[];
+        for(let i=2;i<feld.length;i+=2){ const a=feld[i],b=feld[i+1]; if(b===undefined){sieger.push(a);continue;} const w=autoSpiel(a,b,state.stärken); sieger.push(w); andereErgebnisse.push({a,b,sieger:w}); }
+        const ohneMich=sieger.filter(t=>t!==meinTeam).sort(()=>Math.random()-0.5); const neuesFeld=[meinTeam,...ohneMich];
+        folge={typ:"state",wert:{...state,rundeIdx:state.rundeIdx+1,feld:neuesFeld,log:neuLog,entwicklung,gesperrt:neueSperren,andereErgebnisse,gruppeFertig:false,gelbKonto,sperrKonto}};
+      }
     }
-    if(!gewonnen){ setEndergebnis(res.runde); setPhase("ergebnis"); setTurnierState(null); return; }
-    if(state.rundeIdx===RUNDEN.length-1){ setEndergebnis("weltmeister"); setPhase("ergebnis"); setTurnierState(null); return; }
-    const feld=state.feld; const sieger=[meinTeam]; const andereErgebnisse=[];
-    for(let i=2;i<feld.length;i+=2){ const a=feld[i],b=feld[i+1]; if(b===undefined){sieger.push(a);continue;} const w=autoSpiel(a,b,state.stärken); sieger.push(w); andereErgebnisse.push({a,b,sieger:w}); }
-    const ohneMich=sieger.filter(t=>t!==meinTeam).sort(()=>Math.random()-0.5); const neuesFeld=[meinTeam,...ohneMich];
-    setTurnierState({...state,rundeIdx:state.rundeIdx+1,feld:neuesFeld,log:neuLog,entwicklung,gesperrt:neueSperren,andereErgebnisse,gruppeFertig:false,gelbKonto,sperrKonto});
+
+    // Verletzungen in diesem Spiel? -> erst Ersatz wählen lassen, dann fortfahren
+    const verletzte=res.vorfälle.filter(v=>v.typ==="verletzung");
+    if(verletzte.length>0){
+      setWechsel({ verletzte, naechster:0, folge });
+    } else {
+      folgeAnwenden(folge);
+    }
+  }
+
+  // Übernimmt den nach dem Spiel berechneten Folgezustand
+  function folgeAnwenden(folge){
+    if(folge.typ==="ende"){ setEndergebnis(folge.end); if(folge.wert) setTurnierState(folge.wert); else setTurnierState(null); setPhase("ergebnis"); }
+    else { setTurnierState(folge.wert); }
+  }
+
+  // Ersatzspieler für einen verletzten Spieler wählen
+  function wähleErsatz(ersatzId){
+    setWechsel(w=>{
+      const verletzter=w.verletzte[w.naechster];
+      // Aufstellung: verletzten Spieler durch Ersatz ersetzen (für Folgeprüfungen)
+      setAufstellung(prev=>{
+        const ohne=prev.filter(id=>id!==verletzter.spielerId);
+        return ersatzId!=null ? [...ohne,ersatzId] : ohne;
+      });
+      const nächster=w.naechster+1;
+      if(nächster<w.verletzte.length){ return {...w,naechster:nächster}; }
+      // Alle Verletzten abgearbeitet -> Folgezustand übernehmen
+      folgeAnwenden(w.folge);
+      return null;
+    });
   }
   function elfmeterAktion(wahl){
     setElfmeter(em=>{
@@ -460,9 +558,27 @@ function App(){
       if(istMein){ const tor=wahl!==cpu; if(tor)m++; b={typ:"schuss",wahl,twWahl:cpu,tor}; }
       else { const tor=wahl!==cpu; if(tor)g++; b={typ:"halten",schuss:cpu,meinTw:wahl,tor}; }
       const ns=em.schuss+1; const nv=[...em.verlauf,b]; const nm=istMein?"halten":"schiessen";
-      const entschieden=ns>=10 && ns%2===0 && m!==g;
-      if(entschieden){ const gew=m>g; setTimeout(()=>{finalisiereSpiel(em.state,em.res,gew,{m,g});setElfmeter(null);},1200);
-        return {...em,meinScore:m,gegnerScore:g,schuss:ns,verlauf:nv,modus:nm,fertig:true,gewonnen:gew}; }
+
+      // Wie viele reguläre Schüsse (bis 5 je Seite) bleiben jeder Seite?
+      // Gerade Schussnummern = ich, ungerade = Gegner.
+      let meineGenommen=0, gegnerGenommen=0;
+      for(let i=0;i<ns;i++){ if(i%2===0) meineGenommen++; else gegnerGenommen++; }
+      const meineOffen=Math.max(0,5-meineGenommen);
+      const gegnerOffen=Math.max(0,5-gegnerGenommen);
+
+      let fertig=false, gewonnen=false;
+      if(meineGenommen<=5 && gegnerGenommen<=5){
+        // Reguläre Phase: vorzeitiges Ende, wenn ein Rückstand nicht mehr aufholbar ist
+        if(m > g + gegnerOffen){ fertig=true; gewonnen=true; }
+        else if(g > m + meineOffen){ fertig=true; gewonnen=false; }
+        else if(meineGenommen===5 && gegnerGenommen===5 && m!==g){ fertig=true; gewonnen=m>g; }
+      } else {
+        // Sudden Death: nach jedem vollständigen Paar entscheiden
+        if(ns%2===0 && m!==g){ fertig=true; gewonnen=m>g; }
+      }
+
+      if(fertig){ setTimeout(()=>{finalisiereSpiel(em.state,em.res,gewonnen,{m,g});setElfmeter(null);},1200);
+        return {...em,meinScore:m,gegnerScore:g,schuss:ns,verlauf:nv,modus:nm,fertig:true,gewonnen}; }
       return {...em,meinScore:m,gegnerScore:g,schuss:ns,verlauf:nv,modus:nm};
     });
   }
@@ -473,9 +589,12 @@ function App(){
 
   return (
     <div className="wrap">
-      <div className="row gap2 mb4">
-        <Trophy size={28} color="#f59e0b" />
-        <h1>WM Fußballmanager</h1>
+      <div className="row between headbar mb4">
+        <div>
+          <div className="eyebrow">Small Knuddel Cup</div>
+          <h1>WM Fußballmanager</h1>
+        </div>
+        <div className="brand"><Trophy size={22} color="var(--green-dark)"/></div>
       </div>
 
       {phase==="auswahl" && (
@@ -499,7 +618,8 @@ function App(){
 
       {phase==="turnier" && (
         <div>
-          {liveSpiel ? <LiveSpiel key={liveSpiel.res.runde+liveSpiel.res.gegnerName} ls={liveSpiel} meinTeam={meinTeam} onFertig={spielFertig} />
+          {wechsel ? <WechselView wechsel={wechsel} kader={kader} aufstellung={aufstellung} gesperrteIds={gesperrteIds} onWähle={wähleErsatz} />
+          : liveSpiel ? <LiveSpiel key={liveSpiel.res.runde+liveSpiel.res.gegnerName} ls={liveSpiel} meinTeam={meinTeam} onFertig={spielFertig} />
           : elfmeter ? <ElfmeterView em={elfmeter} meinTeam={meinTeam} onAktion={elfmeterAktion} />
           : turnierState ? (
             <Zwischen {...{turnierState,meinTeam,turnierLog,nächstesSpiel,
@@ -516,6 +636,51 @@ function App(){
   );
 }
 
+function WechselView({wechsel,kader,aufstellung,gesperrteIds,onWähle}){
+  const verletzter=wechsel.verletzte[wechsel.naechster];
+  const verletzterSp=kader.find(s=>s.id===verletzter.spielerId);
+  const pos=verletzterSp?.position;
+  // Verfügbare Ersatzspieler: gleiche Position, nicht in der Elf, nicht gesperrt, nicht der Verletzte
+  const inElf=new Set(aufstellung);
+  const kandidaten=kader
+    .filter(s=>s.position===pos && !inElf.has(s.id) && !gesperrteIds.has(s.id) && s.id!==verletzter.spielerId)
+    .sort((a,b)=>b.rating-a.rating);
+  const mehr = wechsel.verletzte.length>1 ? ` (${wechsel.naechster+1}/${wechsel.verletzte.length})` : "";
+  return (
+    <div>
+      <div className="panel mb3" style={{background:"#fff7ed",borderColor:"#fed7aa"}}>
+        <h2 style={{margin:"0 0 4px"}}>🩹 Verletzung{mehr}</h2>
+        <p className="small" style={{margin:0}}>
+          <b>{verletzter.name}</b>{pos?` (${pos})`:""} hat sich verletzt und fällt aus.
+          Wähle einen Ersatz auf der Position <b>{pos}</b>:
+        </p>
+      </div>
+      {kandidaten.length>0 ? (
+        <div className="grid gsm2 mb3">
+          {kandidaten.map(sp=>(
+            <button key={sp.id} onClick={()=>onWähle(sp.id)} className="plr">
+              <span className={`posbadge pos-${sp.position}`}>{sp.position}</span>
+              <div className="flex1">
+                <div className="semi small truncate">{sp.name}</div>
+                <div className="row gap2 small grey">
+                  <span>SCH {sp.schnelligkeit}</span><span>TEC {sp.technik}</span><span>KON {sp.kondition}</span>
+                  <span style={{fontWeight:700,color:"#374151"}}>★{sp.rating}</span>
+                </div>
+              </div>
+              <Chevron size={18} color="#16a34a" className="shrink0"/>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className="small grey mb3">Kein Ersatzspieler auf dieser Position verfügbar.</p>
+      )}
+      <button onClick={()=>onWähle(null)} className="btn btn-grey">
+        {kandidaten.length>0 ? "Ohne Ersatz weiterspielen" : "Weiter"}
+      </button>
+    </div>
+  );
+}
+
 function Aufstellung({meinTeam,kader,aufstellung,empfehlung,gesperrteIds,gesperrteListe,posZähler,teamStärke,aufstellungKomplett,pausiert,toggleSpieler,übernehmeEmpfehlung,neustart,start}){
   return (
     <div>
@@ -524,22 +689,22 @@ function Aufstellung({meinTeam,kader,aufstellung,empfehlung,gesperrteIds,gesperr
         {pausiert ? <span className="semi small" style={{color:"#2563eb"}}>{pausiert.phase==="gruppe"?`Spieltag ${pausiert.gruppenSpielIdx+1} steht an`:`${RUNDEN[pausiert.rundeIdx]} steht an`}</span>
           : <button onClick={neustart} className="row gap1 small grey" style={{background:"none",border:"none"}}><Rotate size={14}/> Team wechseln</button>}
       </div>
-      <div className="panel mb4" style={{background:"#f0fdf4",borderColor:"#bbf7d0"}}>
+      <div className="panel mb4" style={{background:"#effaf3",borderColor:"#bfe9cf"}}>
         <div className="row between mb2">
           <span className="semi row gap1"><Users size={16}/> Aufstellung {aufstellung.length}/11</span>
           <span className="small grey">Formation 1-4-4-2</span>
         </div>
         <div className="row gap2 wrapf small mb2">
           {Object.keys(FORMATION).map(p=>(
-            <span key={p} className={`pill pos-${p}`} style={posZähler[p]===FORMATION[p]?{fontWeight:700,boxShadow:"0 0 0 2px currentColor"}:{}}>{p}: {posZähler[p]}/{FORMATION[p]}</span>
+            <span key={p} className={`pill pos-${p}`} style={posZähler[p]===FORMATION[p]?{boxShadow:"0 0 0 2px currentColor"}:{}}>{p}: {posZähler[p]}/{FORMATION[p]}</span>
           ))}
         </div>
         <button onClick={übernehmeEmpfehlung} className="btn btn-amber row gap1"><Star size={13}/> Beste Elf empfehlen</button>
         {aufstellung.length>0 && (
           <div className="grid g3 mt3 tc small">
-            <div className="card"><div className="row center" style={{color:"#dc2626"}}><Zap size={14}/></div>Schnellig. <b>{teamStärke.sch}</b></div>
-            <div className="card"><div className="row center" style={{color:"#2563eb"}}><Target size={14}/></div>Technik <b>{teamStärke.tec}</b></div>
-            <div className="card"><div className="row center" style={{color:"#16a34a"}}><Shield size={14}/></div>Kondition <b>{teamStärke.kon}</b></div>
+            <div className="card"><div className="row center" style={{color:"var(--green-dark)"}}><Zap size={14}/></div>Schnellig. <b>{teamStärke.sch}</b></div>
+            <div className="card"><div className="row center" style={{color:"var(--green-dark)"}}><Target size={14}/></div>Technik <b>{teamStärke.tec}</b></div>
+            <div className="card"><div className="row center" style={{color:"var(--green-dark)"}}><Shield size={14}/></div>Kondition <b>{teamStärke.kon}</b></div>
           </div>
         )}
       </div>
@@ -581,20 +746,20 @@ function Zwischen({turnierState,meinTeam,turnierLog,nächstesSpiel,aufstellungAe
     <div>
       {ts.gruppeFertig ? (
         <div>
-          <h2>Gruppenphase geschafft! 🎉</h2>
+          <div className="row gap2 mb2"><h2 style={{margin:0}}>Gruppenphase geschafft! 🎉</h2><span className="badge">QUALIFIZIERT</span></div>
           <p className="grey mb2">Du wurdest <b>{ts.meinPlatz}.</b> in deiner Gruppe und ziehst in die K.o.-Phase ein.</p>
           {ts.tabelleMeine && <Tabelle tab={ts.tabelleMeine} meinTeam={meinTeam} markTop/>}
           <p className="grey mb3">Noch <b>{ts.feld.length} Teams</b> dabei. Erstes K.o.-Spiel ({RUNDEN[ts.rundeIdx]}): {flagge(ts.feld[1])} {ts.feld[1]}.</p>
         </div>
       ) : ts.phase==="gruppe" ? (
         <div>
-          <h2>Gruppenphase</h2>
+          <div className="row gap2 mb2"><h2 style={{margin:0}}>Gruppenphase</h2><span className="badge dark">SPIELTAG {ts.gruppenSpielIdx+1}</span></div>
           <p className="grey mb3">Als Nächstes (Spieltag {ts.gruppenSpielIdx+1}): {flagge(ts.meineGegner[ts.gruppenSpielIdx])} {ts.meineGegner[ts.gruppenSpielIdx]}.</p>
           <Tabelle tab={simuliereGruppe(ts.meineGruppe,ts.stärken,ts.eigeneErgebnisse,true)} meinTeam={meinTeam}/>
         </div>
       ) : (
         <div>
-          <h2>Weiter geht's!</h2>
+          <div className="row gap2 mb2"><h2 style={{margin:0}}>Weiter geht's!</h2><span className="badge dark">{RUNDEN[ts.rundeIdx].toUpperCase()}</span></div>
           <p className="grey mb3">Du hast das {RUNDEN[ts.rundeIdx-1]} überstanden. Noch <b>{ts.feld.length} Teams</b> im Rennen. Als Nächstes im <b>{RUNDEN[ts.rundeIdx]}</b>: {flagge(ts.feld[1])} {ts.feld[1]}.</p>
           {ts.andereErgebnisse && ts.andereErgebnisse.length>0 && (
             <details className="panel mb3" style={{background:"#f9fafb",borderColor:"#e5e7eb"}}>
@@ -614,8 +779,8 @@ function Zwischen({turnierState,meinTeam,turnierLog,nächstesSpiel,aufstellungAe
       )}
 
       {ts.gesperrt && ts.gesperrt.length>0 && (
-        <div className="panel mb3" style={{background:"#fef2f2",borderColor:"#fecaca"}}>
-          <div className="semi small mb2">⚠️ Ausfälle fürs nächste Spiel</div>
+        <div className="panel mb3" style={{background:"#fdf2f3",borderColor:"#f3c9cd"}}>
+          <div className="row gap2 mb2"><span className="semi small">Ausfälle fürs nächste Spiel</span><span className="badge" style={{background:"#d9485a",color:"#fff"}}>SPERREN</span></div>
           <div className="small" style={{lineHeight:1.6}}>
             {ts.gesperrt.map((s,i)=>{
               const sym=s.typ==="rot"?"🟥":s.typ==="gelb-rot"?"🟨🟥":s.typ==="gelb-sperre"?"🟨🟨":s.typ==="verletzung"?"🩹":"⛔";
@@ -628,11 +793,11 @@ function Zwischen({turnierState,meinTeam,turnierLog,nächstesSpiel,aufstellungAe
       )}
 
       {ts.entwicklung && ts.entwicklung.length>0 && (
-        <div className="panel mb3" style={{background:"#fffbeb",borderColor:"#fde68a"}}>
-          <div className="semi small row gap1 mb2"><Star size={14} className="star" fill="#fbbf24"/> Spieler verbessert</div>
+        <div className="panel mb3" style={{background:"#effaf3",borderColor:"#bfe9cf"}}>
+          <div className="row gap2 mb2"><span className="semi small">Spieler verbessert</span><span className="badge">ENTWICKLUNG</span></div>
           <div className="grid g2 small" style={{gap:"2px 12px"}}>
             {[...ts.entwicklung].sort((a,b)=>b.delta-a.delta).map((e,i)=>(
-              <div key={i} className="row between"><span className="truncate">{e.torschütze&&"⚽ "}{e.name}</span><span className="bold shrink0" style={{color:"#16a34a"}}>★ +{e.delta}</span></div>
+              <div key={i} className="row between"><span className="truncate">{e.torschütze&&"⚽ "}{e.name}</span><span className="bold shrink0" style={{color:"var(--green-deep)"}}>★ +{e.delta}</span></div>
             ))}
           </div>
         </div>
@@ -667,7 +832,7 @@ function Tabelle({tab,meinTeam,markTop}){
 
 function Spielkarte({s,meinTeam,compact}){
   return (
-    <div className="panel" style={{background:s.gewonnen?"#f0fdf4":"#fef2f2",borderColor:s.gewonnen?"#bbf7d0":"#fecaca"}}>
+    <div className="panel" style={{background:s.gewonnen?"#effaf3":"#fdf2f3",borderColor:s.gewonnen?"#bfe9cf":"#f3c9cd"}}>
       <div className="row between">
         <div>
           <div className="tiny semi grey">{s.runde}</div>
@@ -675,11 +840,11 @@ function Spielkarte({s,meinTeam,compact}){
           {s.stadion && <div className="tiny grey2">📍 {s.stadion.stadion}, {s.stadion.stadt}</div>}
           {s.elfmeter && <div className="tiny grey">n.E. {s.elfmeter.m}:{s.elfmeter.g}</div>}
         </div>
-        <div className="bold" style={{fontSize:"20px",color:s.gewonnen?"#16a34a":"#dc2626"}}>{s.meineTore}:{s.gegnerTore}</div>
+        <div className="bold" style={{fontSize:"22px",color:s.gewonnen?"var(--green-deep)":"#d9485a"}}>{s.meineTore}:{s.gegnerTore}</div>
       </div>
       {!compact && s.torEvents.length>0 && (
         <div className="mt2 tiny" style={{lineHeight:1.6}}>
-          {s.torEvents.map((e,i)=>(<div key={i} style={{color:e.team==="mein"?"#15803d":"#dc2626"}}>⚽ <span className="mono semi">{e.minute}'</span> {e.schütze}{e.team==="gegner"&&" (Gegner)"}</div>))}
+          {s.torEvents.map((e,i)=>(<div key={i} style={{color:e.team==="mein"?"var(--green-deep)":"#d9485a"}}>⚽ <span className="mono semi">{e.minute}'</span> {e.schütze}{e.team==="gegner"&&" (Gegner)"}</div>))}
         </div>
       )}
       {!compact && s.vorfälle && s.vorfälle.length>0 && (
@@ -687,7 +852,7 @@ function Spielkarte({s,meinTeam,compact}){
           {s.vorfälle.map((v,i)=>{
             const sym=v.typ==="rot"?"🟥":v.typ==="gelb-rot"?"🟨🟥":v.typ==="gelb"?"🟨":"🩹";
             const txt=v.typ==="rot"?"(Rote Karte)":v.typ==="gelb-rot"?"(Gelb-Rot)":v.typ==="gelb"?"(Gelbe Karte)":"(verletzt)";
-            return <div key={i} style={{color:"#ea580c"}}>{sym} <span className="mono semi">{v.minute}'</span> {v.name} {txt}</div>;
+            return <div key={i} style={{color:"#b9742a"}}>{sym} <span className="mono semi">{v.minute}'</span> {v.name} {txt}</div>;
           })}
         </div>
       )}
@@ -696,7 +861,7 @@ function Spielkarte({s,meinTeam,compact}){
           {[["Schnelligkeit",s.meineSkills.sch,s.gSkills.sch],["Technik",s.meineSkills.tec,s.gSkills.tec],["Kondition",s.meineSkills.kon,s.gSkills.kon]].map(([l,m,g])=>(
             <div key={l} style={{background:"rgba(255,255,255,.7)",borderRadius:"8px",padding:"6px"}}>
               <div className="grey">{l}</div>
-              <div><span style={m>=g?{fontWeight:700,color:"#15803d"}:{color:"#4b5563"}}>{m}</span><span className="grey2"> : </span><span style={g>m?{fontWeight:700,color:"#b91c1c"}:{color:"#4b5563"}}>{g}</span></div>
+              <div><span style={m>=g?{fontWeight:800,color:"var(--green-deep)"}:{color:"#5b6b78"}}>{m}</span><span className="grey2"> : </span><span style={g>m?{fontWeight:800,color:"#d9485a"}:{color:"#5b6b78"}}>{g}</span></div>
             </div>
           ))}
         </div>
@@ -731,12 +896,12 @@ function LiveSpiel({ls,meinTeam,onFertig}){
       <div className="tc mb3">
         <div className="tiny semi grey">{res.runde}</div>
         {res.stadion && <div className="tiny grey mt1">📍 {res.stadion.stadion}, {res.stadion.stadt}</div>}
-        <div className="row center gap2 mt1" style={{color:"#374151"}}><Clock size={18} color="#16a34a"/><span className="mono bold" style={{fontSize:"20px"}}>{minute}'</span></div>
+        <div className="row center gap2 mt1" style={{color:"var(--ink)"}}><Clock size={18} color="var(--green-dark)"/><span className="mono bold" style={{fontSize:"20px"}}>{minute}'</span></div>
       </div>
       <div className="scoreboard mb4">
         <div className="row center gap4 bold" style={{fontSize:"22px"}}>
           <span className="flex1 tr">{flagge(meinTeam)} {meinTeam}</span>
-          <span className="mono" style={{background:"rgba(255,255,255,.2)",borderRadius:"8px",padding:"4px 16px"}}>{meinScore} : {gegnerScore}</span>
+          <span className="mono" style={{background:"rgba(255,255,255,.12)",borderRadius:"8px",padding:"4px 16px",color:"var(--green)"}}>{meinScore} : {gegnerScore}</span>
           <span className="flex1 tl">{res.gegnerName} {flagge(res.gegnerName)}</span>
         </div>
         <div className="bar"><div style={{width:`${(minute/90)*100}%`}}/></div>
@@ -746,12 +911,12 @@ function LiveSpiel({ls,meinTeam,onFertig}){
           <div className="tc">
             <p className="grey2 small mb2">Anpfiff! Das Spiel läuft…</p>
             {res.siegchance!=null && (
-              <div style={{display:"inline-block",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"8px",padding:"8px 12px"}}>
+              <div className="panel" style={{display:"inline-block",padding:"10px 14px"}}>
                 <div className="tiny grey mb1">Siegprognose</div>
                 <div className="row gap2">
-                  <span className="small bold" style={{color:"#16a34a"}}>{res.siegchance}%</span>
-                  <div style={{width:"128px",height:"8px",background:"#fecaca",borderRadius:"99px",overflow:"hidden"}}><div style={{height:"100%",background:"#22c55e",width:`${res.siegchance}%`}}/></div>
-                  <span className="small bold" style={{color:"#ef4444"}}>{100-res.siegchance}%</span>
+                  <span className="small bold" style={{color:"var(--green-deep)"}}>{res.siegchance}%</span>
+                  <div style={{width:"128px",height:"10px",background:"#f3c9cd",borderRadius:"99px",overflow:"hidden"}}><div style={{height:"100%",background:"var(--green)",width:`${res.siegchance}%`}}/></div>
+                  <span className="small bold" style={{color:"#d9485a"}}>{100-res.siegchance}%</span>
                 </div>
               </div>
             )}
@@ -760,9 +925,9 @@ function LiveSpiel({ls,meinTeam,onFertig}){
           if(e.art==="vorfall"){
             const sym=e.typ==="rot"?"🟥":e.typ==="gelb-rot"?"🟨🟥":e.typ==="gelb"?"🟨":"🩹";
             const txt=e.typ==="rot"?"Rote Karte!":e.typ==="gelb-rot"?"Gelb-Rote Karte!":e.typ==="gelb"?"Gelbe Karte":"verletzt";
-            return <div key={i} className="small row gap2" style={{color:"#ea580c"}}><span className="mono bold">{e.minute}'</span><span>{sym}</span><span className="semi">{e.name}</span><span className="tiny grey">{txt}</span></div>;
+            return <div key={i} className="small row gap2" style={{color:"#b9742a"}}><span className="mono bold">{e.minute}'</span><span>{sym}</span><span className="semi">{e.name}</span><span className="tiny grey">{txt}</span></div>;
           }
-          return <div key={i} className="small row gap2" style={{color:e.team==="mein"?"#15803d":"#dc2626"}}><span className="mono bold">{e.minute}'</span><span>⚽</span><span className="semi">{e.schütze}</span>{e.team==="gegner"&&<span className="tiny grey">(Gegner)</span>}</div>;
+          return <div key={i} className="small row gap2" style={{color:e.team==="mein"?"var(--green-deep)":"#d9485a"}}><span className="mono bold">{e.minute}'</span><span>⚽</span><span className="semi">{e.schütze}</span>{e.team==="gegner"&&<span className="tiny grey">(Gegner)</span>}</div>;
         })}
       </div>
     </div>
@@ -770,45 +935,115 @@ function LiveSpiel({ls,meinTeam,onFertig}){
 }
 
 function ElfmeterView({em,meinTeam,onAktion}){
-  const istSchuss=em.modus==="schiessen"; const letzte=em.verlauf[em.verlauf.length-1];
+  const istSchuss=em.modus==="schiessen";
+  const letzte=em.verlauf[em.verlauf.length-1];
+  // anim: null | "anlauf" | "flug" | "fertig"
+  const [anim,setAnim]=React.useState("idle");
+  const [wahl,setWahl]=React.useState(null);
+  const timers=useRef([]);
+
+  // Positionen (in %) für Ball-Flug je Ecke
+  const ballX={links:-72,mitte:0,rechts:72};
+
+  function spielen(ecke){
+    if(anim==="anlauf"||anim==="flug") return;
+    setWahl(ecke);
+    setAnim("anlauf");
+    // kurze Spannungsphase, dann Schuss auswerten (ruft App-Logik auf)
+    timers.current.push(setTimeout(()=>{
+      setAnim("flug");
+      onAktion(ecke); // erzeugt neues "letzte"-Ergebnis im Eltern-State
+    }, 650));
+  }
+
+  // Wenn ein neues Ergebnis vorliegt, Flug-Animation kurz halten, dann auflösen
+  useEffect(()=>{
+    if(anim==="flug"){
+      const t=setTimeout(()=>setAnim("fertig"), 700);
+      timers.current.push(t);
+      const t2=setTimeout(()=>{ setAnim("idle"); setWahl(null); }, 1500);
+      timers.current.push(t2);
+    }
+    return ()=>{};
+  },[em.verlauf.length]); // läuft, sobald ein neues Ergebnis hinzukommt
+
+  useEffect(()=>()=>{ timers.current.forEach(clearTimeout); },[]);
+
+  const zeigeErgebnis = anim==="flug" || anim==="fertig";
+  const ballEcke = zeigeErgebnis && letzte ? (letzte.typ==="schuss"?letzte.wahl:letzte.schuss) : null;
+  const keeperEcke = zeigeErgebnis && letzte ? (letzte.typ==="schuss"?letzte.twWahl:letzte.meinTw) : null;
+  const tor = letzte?.tor;
+
+  // Ballposition
+  let ballStyle={transform:"translateY(0)"};
+  if(zeigeErgebnis && ballEcke){
+    ballStyle={transform:`translate(${ballX[ballEcke]}px,-92px)`};
+  } else if(anim==="anlauf"){
+    ballStyle={transform:"translateY(6px) scale(.9)"};
+  }
+  // Torwartposition (hechtet zur gewählten Ecke)
+  let kStyle={left:"calc(50% - 16px)"};
+  if(zeigeErgebnis && keeperEcke==="links") kStyle={left:"12%"};
+  else if(zeigeErgebnis && keeperEcke==="rechts") kStyle={left:"auto",right:"12%"};
+  else if(zeigeErgebnis && keeperEcke==="mitte") kStyle={left:"calc(50% - 16px)"};
+
   return (
     <div>
       <div className="tc mb3">
         <div className="tiny semi grey">{em.runde} · Elfmeterschießen</div>
         {em.stadion && <div className="tiny grey2 mt1">📍 {em.stadion.stadion}, {em.stadion.stadt}</div>}
-        <div className="bold mt1" style={{fontSize:"30px"}}>
-          <span style={{color:"#16a34a"}}>{em.meinScore}</span><span className="grey2"> : </span><span style={{color:"#dc2626"}}>{em.gegnerScore}</span>
+        <div className="bold mt1 pk-score" style={{fontSize:"34px"}}>
+          <span style={{color:"var(--green-deep)"}}>{em.meinScore}</span><span className="grey2"> : </span><span style={{color:"#d9485a"}}>{em.gegnerScore}</span>
         </div>
         <div className="small grey">{flagge(meinTeam)} {meinTeam} vs {em.gegner} {flagge(em.gegner)}</div>
       </div>
-      <div className="mb4" style={{background:"#16a34a",borderRadius:"12px",padding:"16px"}}>
-        <div className="goal">
-          {ECKEN.map(e=>{
-            let bg="transparent";
-            if(letzte){
-              if(letzte.typ==="schuss"){ if(letzte.wahl===e.id) bg=letzte.tor?"#86efac":"#e5e7eb"; if(letzte.twWahl===e.id) bg="#fef08a"; }
-              else { if(letzte.schuss===e.id) bg=letzte.tor?"#fca5a5":"#e5e7eb"; if(letzte.meinTw===e.id) bg="#fef08a"; }
-            }
-            return <div key={e.id} style={{background:bg}}><e.icon size={20} color="#9ca3af"/></div>;
-          })}
-        </div>
+
+      {/* Animierte Schuss-Bühne */}
+      <div className={`pk-stage mb3 ${anim==="fertig"&&!tor?"pk-shake":""}`}>
+        <div className="pk-net"></div>
+        {/* Torwart */}
+        <div className="pk-keeper" style={kStyle}>🧤</div>
+        {/* Ball */}
+        <div className="pk-ball" style={ballStyle}>⚽</div>
+        {/* Auflösung */}
+        {anim==="fertig" && letzte && (
+          <div className="pk-flash pk-pop" style={{color:tor?"var(--green-deep)":"#d9485a"}}>
+            {letzte.typ==="schuss"
+              ? (tor?"TOR! ⚽":"GEHALTEN! 🧤")
+              : (tor?"GEGENTOR 😟":"PARIERT! 🧤")}
+          </div>
+        )}
+        {anim==="anlauf" && (
+          <div className="pk-flash" style={{color:"var(--ink)",fontSize:"18px"}}>Anlauf…</div>
+        )}
       </div>
-      {letzte && (
-        <div className="tc small semi mb3">
-          {letzte.typ==="schuss" ? (letzte.tor?"⚽ TOR! Der Torwart war in der falschen Ecke.":"🧤 Gehalten! Der Torwart hat pariert.")
-            : (letzte.tor?"😟 Gegentor – du warst in der falschen Ecke.":"🧤 Super! Du hast den Schuss gehalten!")}
-        </div>
-      )}
+
+      {/* Schützen-Punkte (Verlauf) */}
+      <div className="pk-step mb3">
+        {em.verlauf.map((v,i)=>(
+          <span key={i} className={`pk-dot ${v.tor?(v.typ==="schuss"?"goal":"miss"):(v.typ==="schuss"?"miss":"goal")}`}
+            title={v.typ==="schuss"?(v.tor?"dein Tor":"gehalten"):(v.tor?"Gegentor":"du hast gehalten")}></span>
+        ))}
+      </div>
+
       {!em.fertig ? (
         <div>
-          <p className="tc semi mb3">{istSchuss?"⚽ In welche Ecke schießt du?":"🧤 In welche Ecke springst du?"}</p>
+          <p className="tc semi mb3">
+            {anim==="anlauf"||anim==="flug" ? "…"
+              : istSchuss ? "⚽ In welche Ecke schießt du?" : "🧤 In welche Ecke springst du?"}
+          </p>
           <div className="grid g3">
-            {ECKEN.map(e=>(<button key={e.id} onClick={()=>onAktion(e.id)} className="ecke"><e.icon size={22}/>{e.label}</button>))}
+            {ECKEN.map(e=>(
+              <button key={e.id} onClick={()=>spielen(e.id)} className="ecke"
+                disabled={anim==="anlauf"||anim==="flug"}>
+                <e.icon size={22}/>{e.label}
+              </button>
+            ))}
           </div>
           <p className="tc tiny grey2 mt2">Schuss {Math.floor(em.schuss/2)+1}</p>
         </div>
       ) : (
-        <div className="tc bold" style={{fontSize:"18px",padding:"12px",borderRadius:"12px",background:em.gewonnen?"#dcfce7":"#fee2e2",color:em.gewonnen?"#15803d":"#b91c1c"}}>
+        <div className="tc bold" style={{fontSize:"18px",padding:"14px",borderRadius:"12px",background:em.gewonnen?"#effaf3":"#fdf2f3",color:em.gewonnen?"var(--green-deep)":"#d9485a"}}>
           {em.gewonnen?"🎉 Du gewinnst das Elfmeterschießen!":"😞 Verloren im Elfmeterschießen."}
         </div>
       )}
@@ -819,11 +1054,11 @@ function ElfmeterView({em,meinTeam,onAktion}){
 function Ergebnis({endergebnis,meinTeam,turnierState,turnierLog,neueAufstellung,neustart}){
   return (
     <div>
-      <div className="panel tc mb4" style={endergebnis==="weltmeister"?{background:"#fef3c7",borderColor:"#fbbf24",borderWidth:"2px"}:{background:"#f3f4f6",borderColor:"#d1d5db",borderWidth:"2px"}}>
-        <div className="row center mb2"><Trophy size={48} color={endergebnis==="weltmeister"?"#f59e0b":"#9ca3af"}/></div>
-        {endergebnis==="weltmeister" ? <><h2 style={{color:"#b45309",fontSize:"24px"}}>🏆 WELTMEISTER! 🏆</h2><p style={{color:"#d97706"}}>{flagge(meinTeam)} {meinTeam} gewinnt die Weltmeisterschaft!</p></>
-        : endergebnis==="gruppe-aus" ? <><h2 style={{color:"#374151"}}>In der Gruppenphase ausgeschieden</h2><p className="grey">{flagge(meinTeam)} {meinTeam} wurde nur {turnierState?.meinPlatz}. – nur die Top 2 kommen weiter.</p></>
-        : <><h2 style={{color:"#374151"}}>Aus im {endergebnis}</h2><p className="grey">{flagge(meinTeam)} {meinTeam} ist ausgeschieden. Nächstes Mal!</p></>}
+      <div className="panel tc mb4" style={endergebnis==="weltmeister"?{background:"#effaf3",borderColor:"var(--green)",borderWidth:"2px"}:{background:"#f3f6f8",borderColor:"#d7e0e6",borderWidth:"2px"}}>
+        <div className="row center mb2"><Trophy size={48} color={endergebnis==="weltmeister"?"var(--green-dark)":"#9fb0bd"}/></div>
+        {endergebnis==="weltmeister" ? <><h2 style={{color:"var(--green-deep)",fontSize:"24px"}}>🏆 WELTMEISTER! 🏆</h2><p style={{color:"var(--green-dark)"}}>{flagge(meinTeam)} {meinTeam} gewinnt die Weltmeisterschaft!</p></>
+        : endergebnis==="gruppe-aus" ? <><h2>In der Gruppenphase ausgeschieden</h2><p className="grey">{flagge(meinTeam)} {meinTeam} wurde nur {turnierState?.meinPlatz}. – nur die Top 2 kommen weiter.</p></>
+        : <><h2>Aus im {endergebnis}</h2><p className="grey">{flagge(meinTeam)} {meinTeam} ist ausgeschieden. Nächstes Mal!</p></>}
       </div>
       <div className="grid mb4" style={{gap:"12px"}}>
         {turnierLog.map((s,i)=><Spielkarte key={i} s={s} meinTeam={meinTeam}/>)}
